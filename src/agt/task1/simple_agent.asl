@@ -7,12 +7,12 @@
 /* Initial goals */
 !start_sum(4,2). // uncomment for Task 1.2.1
 !start_sum(4,-2). // uncomment for Task 1.2.1
-//!start_division(4,2). // uncomment for Task 1.2.2
-//!start_division(4,2.5). // uncomment for Task 1.2.2
-//!start_division(4,0). // uncomment for Task 1.2.2
-//!start_even_or_odd(4). // uncomment for Task 1.2.3
-//!start_even_or_odd(5). // uncomment for Task 1.2.3
-//!start_list_generation(0,4). // uncomment for Task 1.2.4
+!start_division(4,2). // uncomment for Task 1.2.2
+!start_division(4,2.5). // uncomment for Task 1.2.2
+!start_division(4,0). // uncomment for Task 1.2.2
+!start_even_or_odd(4). // uncomment for Task 1.2.3
+!start_even_or_odd(5). // uncomment for Task 1.2.3
+!start_list_generation(0,4). // uncomment for Task 1.2.4
 //!print_list([0,1,2,3,4]). // uncomment for an example of handling a list with recursion
 
 /* 
@@ -29,15 +29,24 @@
 /* Task 1.2.1 Start of your solution */
 @compute_sum_task_1_2_1_plan
 +!compute_sum(X,Y,Sum) : true <-
-    .print("Implement Task 1.2.1").
+ Sum = X + Y;.
+
 /* Task 1.2.1 End of your solution */
 
+@start_division_task_1_2_2_plan2
++!start_division(Dividend,Divisor): (Divisor == 0) <-
+!compute_division(Dividend,Divisor,_);
+.print("Unable to compute the division of ", Dividend, " by ", Divisor).
+
 @start_division_task_1_2_2_plan
-+!start_division(Dividend,Divisor) : true <- 
++!start_division(Dividend,Divisor): true <-
     !compute_division(Dividend, Divisor, Quotient);
     .print(Dividend, "/", Divisor, "=", Quotient).
 
+
 /* Task 1.2.2 Start of your solution */
++!compute_division(Dividend, Divisor, Quotient): true <-
+  Quotient = Dividend / Divisor;.
 /* Task 1.2.2 End of your solution */
 
 /* 
@@ -57,7 +66,8 @@
  * Body: informs that X is even
 */
 @start_even_1_2_3_plan
-+!start_even_or_odd(X) : even(X) <-
++!start_even_or_odd(X) :
+X mod 2 == 0 <-
     .print(X, " is even").
 
 /* 
@@ -67,7 +77,8 @@
  * Body: informs that X is odd
 */
 @start_odd_1_2_3_plan
-+!start_even_or_odd(X) : odd(X) <-
++!start_even_or_odd(X) :
+X mod 2 == 1 <-
     .print(X, " is odd").
 
 /* 
@@ -92,7 +103,11 @@
    .print("List with integers from ", Start, " to ", End, ": ", List).
 
 /* Task 1.2.4 Start of your solution */
-// You are allowed to use a triggering event other than the one provided 
+@compute_list_plan
++!compute_list(Start, End, ListSoFar, ResultList) : (Start < End) <-
+    NewListSoFar = ListSoFar | [Start];
+    NewStart = (Start + 1);
+    !compute_list(NewStart, End, NewListSoFar, ResultList).
 /* Task 1.2.4 End of your solution */
 
 /* 
