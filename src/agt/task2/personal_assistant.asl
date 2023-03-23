@@ -3,15 +3,18 @@
 /* Task 2 Start of your solution */
 
 // Inference rule for infering the belief wakeUp with the users preffered waking up methods
-best_option_vibration :- artificial_light_wakeup(rank_art) & natural_light_wakeup(rank_nat) & vibration_wakeup(rank_vib) & rank_vib > (rank_art|rank_nat).
-best_option_artificial :- artificial_light_wakeup(rank_art) & natural_light_wakeup(rank_nat) & vibration_wakeup(rank_vib) & rank_art > (rank_vib|rank_nat).
-best_option_natural :- artificial_light_wakeup(rank_art) & natural_light_wakeup(rank_nat) & vibration_wakeup(rank_vib) & rank_nat > (rank_art|rank_vib).
+best_option("artificial"):- prefer_wakeup_with_art(Art) & prefer_wakeup_with_nat(Nat) & prefer_wakeup_with_vib(Vib) & Art < Nat & Art < Vib.
+best_option("vibration"):- prefer_wakeup_with_art(Art) & prefer_wakeup_with_nat(Nat) &  prefer_wakeup_with_vib(Vib) & Vib < Nat & Vib < Art.
+best_option("natural"):- prefer_wakeup_with_art(Art) & prefer_wakeup_with_nat(Nat) &  prefer_wakeup_with_vib(Vib) & Nat < Vib & Nat < Art.
+
+
+// beliefs how the User wants to be wake up
+prefer_wakeup_with_art(2).
+prefer_wakeup_with_nat(1).
+prefer_wakeup_with_vib(0).
 
 
 
-artificial_light_wakeup(2).
-natural_light_wakeup(1).
-vibration_wakeup(0).
 
 // The agent has the initial goal to start
 !start.
@@ -19,14 +22,14 @@ vibration_wakeup(0).
 +!start : true <-
     .print("Managing the User");
     !checkUser;
-    .wait(4000);.
-
+    .wait(4000);
+    !start.
 
 
 
 /*
- * Plan for reacting to the addition of the goal !GreetUser
- * Triggering event: addition of goal !GreetUser
+ * Plan for reacting to the addition of the goal !checkUser
+ * Triggering event: addition of goal !checkUser
  * Context: the agent believes that the lights are off and that the room requires brightening
  * Body: the agent performs the action of greeting the user
 */
@@ -35,14 +38,27 @@ vibration_wakeup(0).
     .print("Enjoy your event!");.
 
 /*
- * Plan for reacting to the addition of the goal !GreetUser
- * Triggering event: addition of goal !GreetUser
+ * Plan for reacting to the addition of the goal !checkUser
+ * Triggering event: addition of goal !checkUser
  * Context: the agent believes that the lights are off and that the room requires brightening
  * Body: the agent performs the action of starting the wake up routine
 */
 @greetingsUserAsleep
-+!checkUser :  upcoming_event("now") & owner_state("asleep") <-
-    .print("Starting wake-up routine!");.
++!checkUser :  upcoming_event("now") & owner_state("asleep") & best_option("vibration")  <-
+    .print("Starting wake-up routine!");
+    .print("waking up the User through vibrations!");
+     setVibrationsMode.
+     usedMethod("vibration").
++!checkUser :  upcoming_event("now") & owner_state("asleep") & best_option("artificial") <-
+    .print("Starting wake-up routine!");
+    .print("waking up the User through artificial light!");
+     turnOnLights.
+     usedMethod("artificial").
++!checkUser :  upcoming_event("now") & owner_state("asleep") & best_option("natural") <-
+    .print("Starting wake-up routine!");
+    .print("waking up the User through natural light!");
+     raiseBlinds.
+     usedMethod("natural").
 
 /*
  * Plan for reacting to the addition of the belief mattress(State)
@@ -96,6 +112,7 @@ vibration_wakeup(0).
 +owner_state(State) : true <-
     .print("The owner is ", State).
 /* Task 2 End of your solution */
+
 
 /* Import behavior of agents that work in CArtAgO environments */
 { include("$jacamoJar/templates/common-cartago.asl") }
