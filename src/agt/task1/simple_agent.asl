@@ -103,11 +103,17 @@ X mod 2 == 1 <-
    .print("List with integers from ", Start, " to ", End, ": ", List).
 
 /* Task 1.2.4 Start of your solution */
-@compute_list_plan
-+!compute_list(Start, End, ListSoFar, ResultList) : (Start < End) <-
-    NewListSoFar = ListSoFar | [Start];
-    NewStart = (Start + 1);
-    !compute_list(NewStart, End, NewListSoFar, ResultList).
+
+@add_list_entry_plan
++!compute_list(Start, End, ListSoFar, List): Start < End <-
+    .union(ListSoFar, [Start], X);
+    !compute_list((Start + 1), End, X, List).
+
+@finish_list_plan
++!compute_list(Start, End, ListSoFar, List): Start == End <-
+    .union(ListSoFar, [Start], X);
+    List = X.
+
 /* Task 1.2.4 End of your solution */
 
 /* 

@@ -3,13 +3,13 @@
 /* Initial rules */
 
 // Inference rule for infering the belief requires_brightening if the target illuminance is higher than the current illuminance
-requires_brightening :- target_illuminance(Target) & current_illuminance(Current) & Target > Current.
+requires_brightening :- target_illuminance(Target) & current_illuminance(Current) & (Target > Current) > 100.
 
 // Inference rule for infering the belief requires_darkening if the target illuminance is lower than the current illuminance
-requires_darkening :- target_illuminance(Target) & current_illuminance(Current) & Target < Current.
+requires_darkening :- target_illuminance(Target) & current_illuminance(Current) & (Target < Current) > 100.
 
 // Inference rule for infering the belief design_objective_achieved if the target illuminance is equal than the current illuminance
-goal_achieved :- target_illuminance(Target) & current_illuminance(Current) & Target == Current.
+goal_achieved :- target_illuminance(Target) & current_illuminance(Current) & ((Target - Current) >= -100 & (Target - Current) <= 100).
 
 /* Initial beliefs */
 
